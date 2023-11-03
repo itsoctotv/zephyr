@@ -7,12 +7,8 @@
 /dts-v1/;
 #include <st/f7/stm32f723Xe.dtsi>
 #include <st/f7/stm32f723i(c-e)kx-pinctrl.dtsi>
+#include "arduino_r3_connector.dtsi"
 #include <zephyr/dt-bindings/input/input-event-codes.h>
-#include <mem.h>
-#include <freq.h>
-#include <zephyr/dt-bindings/memory-attr/memory-attr.h>
-#include <zephyr/dt-bindings/memory-attr/memory-attr-arm.h>
-
 
 / {
 	model = "STMicroelectronics STM32F723E DISCOVERY board";
@@ -25,15 +21,6 @@
 		zephyr,flash = &flash0;
 		zephyr,flash-controller = &mx25r512;
 	};
-	psram: memory@60000000 { /* FMC_NORSRAM_BANK1 */
-		compatible = "zephyr,memory-region", "mmio-sram";
-		device_type = "memory";
-		reg = <0x60000000 DT_SIZE_K(512)>;
-		zephyr,memory-region = "PSRAM";
-		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
-	}; // psram
-
-
 
 	leds {
 		compatible = "gpio-leds";
@@ -153,7 +140,3 @@ zephyr_udc0: &usbotg_fs {
 	pinctrl-names = "default";
 	status = "okay";
 };
-
-
-
-#include "arduino_r3_connector.dtsi"
