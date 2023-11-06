@@ -25,11 +25,10 @@
 	chosen {
 		zephyr,console = &usart6;
 		zephyr,shell-uart = &usart6;
-		zephyr,sram = &psram;
-		zephyr,dtcm = &psram;
+		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,flash-controller = &mx25r512;
-		
+		zephyr,psram = &psram;
 	};
 
 
