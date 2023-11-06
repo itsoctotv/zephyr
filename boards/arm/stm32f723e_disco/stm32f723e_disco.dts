@@ -6,7 +6,11 @@
 
 /dts-v1/;
 #include <st/f7/stm32f723Xe.dtsi>
+
 #include <st/f7/stm32f723i(c-e)kx-pinctrl.dtsi>
+#include <zephyr/dt-bindings/adc/adc.h>
+#include <zephyr/dt-bindings/memory-controller/stm32-fmc-nor-psram.h>
+
 #include <zephyr/dt-bindings/input/input-event-codes.h>
 #include <mem.h>
 #include <freq.h>
@@ -21,18 +25,12 @@
 	chosen {
 		zephyr,console = &usart6;
 		zephyr,shell-uart = &usart6;
-		zephyr,sram = &sram0;
+		zephyr,sram = &psram;
+		zephyr,dtcm = &psram;
 		zephyr,flash = &flash0;
 		zephyr,flash-controller = &mx25r512;
+		
 	};
-	psram: memory@60000000 { /* FMC_NORSRAM_BANK1 */
-		compatible = "zephyr,memory-region", "mmio-sram";
-		device_type = "memory";
-		reg = <0x60000000 DT_SIZE_K(512)>;
-		zephyr,memory-region = "PSRAM";
-		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
-	}; // psram
-
 
 
 	leds {
@@ -67,6 +65,14 @@
 		sw0 = &user_button;
 		spi-flash0 = &mx25r512;
 	};
+	psram: memory@64000000 { /* FMC_NORSRAM_BANK1 */
+		compatible = "zephyr,memory-region", "mmio-sram";
+		device_type = "memory";
+		reg = <0x64000000 DT_SIZE_K(512)>;
+		zephyr,memory-region = "PSRAM";
+		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
+	}; // psram
+
 };
 
 &clk_hse {
@@ -153,7 +159,78 @@ zephyr_udc0: &usbotg_fs {
 	pinctrl-names = "default";
 	status = "okay";
 };
+&fmc {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 =
+		<&fmc_ne1_pd7		/* PSRAM_NE1 - nCS1 (CS2) */
+		 &fmc_ne2_pg9		/* LCD_NE - nCS */
+		 &fmc_nwe_pd5		/* LCD_PSRAM_NWE - LCD:nWR/PSRAM:nWE */
+		 &fmc_noe_pd4		/* LCD_PSRAM_NOE - LCD:nRD/PSRAM:nOE */
+		 &fmc_nbl0_pe0		/* PSRAM_NBL0 - nLB */
+		 &fmc_nbl1_pe1		/* PSRAM_NBL1 - nUB */
+		 &fmc_a0_pf0		/* LCD-RS_A0 - LCD:RS/PSRAM_A0 - A0 */
+		 &fmc_a1_pf1		/* PSRAM_A1 - A1 */
+		 &fmc_a2_pf2		/* PSRAM_A2 - A2 */
+		 &fmc_a3_pf3		/* PSRAM_A3 - A3 */
+		 &fmc_a4_pf4		/* PSRAM_A4 - A4 */
+		 &fmc_a5_pf5		/* PSRAM_A5 - A5 */
+		 &fmc_a6_pf12		/* PSRAM_A6 - A6 */
+		 &fmc_a7_pf13		/* PSRAM_A7 - A7 */
+		 &fmc_a8_pf14		/* PSRAM_A8 - A8 */
+		 &fmc_a9_pf15		/* PSRAM_A9 - A9 */
+		 &fmc_a10_pg0		/* PSRAM_A10 - A10 */
+		 &fmc_a11_pg1		/* PSRAM_A11 - A11 */
+		 &fmc_a12_pg2		/* PSRAM_A12 - A12 */
+		 &fmc_a13_pg3		/* PSRAM_A13 - A13 */
+		 &fmc_a14_pg4		/* PSRAM_A14 - A14 */
+		 &fmc_a15_pg5		/* PSRAM_A15 - A15 */
+		 &fmc_a16_pd11		/* PSRAM_A16 - A16 */
+		 &fmc_a17_pd12	/* PSRAM_A17 - A17 */
+					/* GND - A18 */
+		 &fmc_d0_pd14		
+		 &fmc_d1_pd15		
+		 &fmc_d2_pd0		
+		 &fmc_d3_pd1		
+		 &fmc_d4_pe7		
+		 &fmc_d5_pe8		
+		 &fmc_d6_pe9		
+		 &fmc_d7_pe10		
+		 &fmc_d8_pe11		
+		 &fmc_d9_pe12		
+		 &fmc_d10_pe13		
+		 &fmc_d11_pe14		
+		 &fmc_d12_pe15		
+		 &fmc_d13_pd8		
+		 &fmc_d14_pd9		
+		 &fmc_d15_pd10>; 
 
+	nor-psram {
+		status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		is66wv51216ebll: fmc-nor-psram@0 {
+			reg = <0>; /* FMC_NORSRAM_BANK1 */
+			st,control = <STM32_FMC_DATA_ADDRESS_MUX_DISABLE
+				      /*  STM32_FMC_MEMORY_TYPE_SRAM */
+					  STM32_FMC_MEMORY_TYPE_PSRAM
+				      STM32_FMC_NORSRAM_MEM_BUS_WIDTH_16
+				      STM32_FMC_BURST_ACCESS_MODE_DISABLE
+				      STM32_FMC_WAIT_SIGNAL_POLARITY_LOW
+				      STM32_FMC_WAIT_TIMING_BEFORE_WS
+				      STM32_FMC_WRITE_OPERATION_ENABLE
+				      STM32_FMC_WAIT_SIGNAL_DISABLE
+				      STM32_FMC_EXTENDED_MODE_DISABLE
+				      STM32_FMC_ASYNCHRONOUS_WAIT_DISABLE
+				      STM32_FMC_WRITE_BURST_DISABLE
+				      STM32_FMC_CONTINUOUS_CLOCK_SYNC_ONLY
+				      STM32_FMC_WRITE_FIFO_DISABLE
+				      STM32_FMC_PAGE_SIZE_NONE>;
+			st,timing = <9 2 6 1 2 2 STM32_FMC_ACCESS_MODE_A>;
+		}; // is66wv51216ebll
+
+	}; // nor-psram
+}; // fmc
 
 
 #include "arduino_r3_connector.dtsi"
