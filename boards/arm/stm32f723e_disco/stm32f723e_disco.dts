@@ -28,7 +28,8 @@
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,flash-controller = &mx25r512;
-		zephyr,psram = &psram;
+		//zephyr,psram = &psram;
+		
 	};
 
 
@@ -64,13 +65,17 @@
 		sw0 = &user_button;
 		spi-flash0 = &mx25r512;
 	};
-	psram: memory@64000000 { /* FMC_NORSRAM_BANK1 */
+	
+	psram: memory@a0000001 { 
 		compatible = "zephyr,memory-region", "mmio-sram";
 		device_type = "memory";
-		reg = <0x64000000 DT_SIZE_K(512)>;
+		reg = <0xa0000001 DT_SIZE_K(512)>;
 		zephyr,memory-region = "PSRAM";
-		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
-	}; // psram
+		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM_NOCACHE) )>;
+	}; // psram 
+	
+	
+	
 
 };
 
@@ -158,9 +163,14 @@ zephyr_udc0: &usbotg_fs {
 	pinctrl-names = "default";
 	status = "okay";
 };
+
+
+
+
 &fmc {
+	
+	
 	status = "okay";
-	pinctrl-names = "default";
 	pinctrl-0 =
 		<&fmc_ne1_pd7		/* PSRAM_NE1 - nCS1 (CS2) */
 		 &fmc_ne2_pg9		/* LCD_NE - nCS */
@@ -203,15 +213,21 @@ zephyr_udc0: &usbotg_fs {
 		 &fmc_d13_pd8		
 		 &fmc_d14_pd9		
 		 &fmc_d15_pd10>; 
+	pinctrl-names = "default";
 
+
+	
 	nor-psram {
 		status = "okay";
+	
 		#address-cells = <1>;
 		#size-cells = <0>;
+		
 		is66wv51216ebll: fmc-nor-psram@0 {
-			reg = <0>; /* FMC_NORSRAM_BANK1 */
-			st,control = <STM32_FMC_DATA_ADDRESS_MUX_DISABLE
-				      /*  STM32_FMC_MEMORY_TYPE_SRAM */
+		
+		reg = <0>; /* FMC_NORSRAM_BANK1 */
+		st,control = <STM32_FMC_DATA_ADDRESS_MUX_DISABLE
+				      //STM32_FMC_MEMORY_TYPE_SRAM
 					  STM32_FMC_MEMORY_TYPE_PSRAM
 				      STM32_FMC_NORSRAM_MEM_BUS_WIDTH_16
 				      STM32_FMC_BURST_ACCESS_MODE_DISABLE
@@ -227,9 +243,10 @@ zephyr_udc0: &usbotg_fs {
 				      STM32_FMC_PAGE_SIZE_NONE>;
 			st,timing = <9 2 6 1 2 2 STM32_FMC_ACCESS_MODE_A>;
 		}; // is66wv51216ebll
-
-	}; // nor-psram
+	};
+	
 }; // fmc
 
 
 #include "arduino_r3_connector.dtsi"
+
