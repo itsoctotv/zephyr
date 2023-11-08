@@ -163,7 +163,7 @@ zephyr_udc0: &usbotg_fs {
 	status = "okay";
 }; // rtc
 
-//add the real time clock (?)
+//add the real time clock (???)
 
 &fmc {
 	status = "okay";
@@ -239,4 +239,3 @@ zephyr_udc0: &usbotg_fs {
 	}; // nor-psram
 }; // fmc
 
-#include "arduino_r3_connector.dtsi"
