@@ -6,10 +6,16 @@
 
 /dts-v1/;
 #include <st/f7/stm32f723Xe.dtsi>
+
 #include <st/f7/stm32f723i(c-e)kx-pinctrl.dtsi>
-#include "arduino_r3_connector.dtsi"
-#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <zephyr/dt-bindings/adc/adc.h>
 #include <zephyr/dt-bindings/memory-controller/stm32-fmc-nor-psram.h>
+
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+#include <mem.h>
+#include <freq.h>
+#include <zephyr/dt-bindings/memory-attr/memory-attr.h>
+#include <zephyr/dt-bindings/memory-attr/memory-attr-arm.h>
 
 
 / {
@@ -22,7 +28,10 @@
 		zephyr,sram = &sram0;
 		zephyr,flash = &flash0;
 		zephyr,flash-controller = &mx25r512;
+		//zephyr,psram = &psram;
+		
 	};
+
 
 	leds {
 		compatible = "gpio-leds";
@@ -56,13 +65,19 @@
 		sw0 = &user_button;
 		spi-flash0 = &mx25r512;
 	};
+	
 	psram: memory@60000000 { /* FMC_NORSRAM_BANK1 */
-			compatible = "zephyr,memory-region", "mmio-sram";
-			device_type = "memory";
-			reg = <0x60000000 DT_SIZE_K(512)>;
-			zephyr,memory-region = "PSRAM";
-			zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
+		compatible = "zephyr,memory-region", "mmio-sram";
+		device_type = "memory";
+		reg = <0x60000000 DT_SIZE_K(512)>;
+		zephyr,memory-region = "PSRAM";
+		zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
 	}; // psram
+
+	
+	
+	
+
 };
 
 &clk_hse {
@@ -150,12 +165,11 @@ zephyr_udc0: &usbotg_fs {
 	status = "okay";
 };
 
-//THIS WAS THE PROBLEM v
-
-
+/* THIS WAS THE PROBLEM vvvvvvvvvvvv */
 &clk_lsi {
 	status = "okay";
 }; // clk_lsi
+
 
 &rtc {
 	clocks = <&rcc STM32_CLOCK_BUS_APB1 0x10000000>,
@@ -163,7 +177,8 @@ zephyr_udc0: &usbotg_fs {
 	status = "okay";
 }; // rtc
 
-//add the real time clock (?)
+
+/* had to add a Real time clock (?) */
 
 &fmc {
 	status = "okay";
@@ -213,7 +228,6 @@ zephyr_udc0: &usbotg_fs {
 
 	nor-psram {
 		status = "okay";
-//add this
 		#address-cells = <1>;
 		#size-cells = <0>;
 		is66wv51216ebll: fmc-nor-psram@0 {
