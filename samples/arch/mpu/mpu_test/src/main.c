@@ -142,8 +142,8 @@ static int cmd_mtest(const struct shell *sh, size_t argc, char *argv[])
 
 int main(void)
 {
-	sys_cache_data_disable();
-	sys_cache_instr_disable();
+	//sys_cache_data_disable();
+	//sys_cache_instr_disable();
 #if defined(CONFIG_SOC_FLASH_MCUX) || defined(CONFIG_SOC_FLASH_LPC) || \
 	defined(CONFIG_SOC_FLASH_STM32)
 	if (!device_is_ready(flash_dev)) {
