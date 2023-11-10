@@ -7,37 +7,59 @@
 #include <stdio.h>
 #include <stdint.h>
 
+void memWrite();
+void memDump();
+
+/*
+
+TODO:
+fill the PSRAM 512KB (struct bit array)
+
+Random locations with pointer and counter that counts lineary and fills the specific memory address
+
+maybe:
+- https://barrgroup.com/embedded-systems/how-to/memory-test-suite-c
 
 
-static inline void writeMem_32(uint32_t data, uintptr_t mem_addr);
-static inline uint32_t readMem_32(uint32_t mem_addr);
+*/
 
 
 
-int main(void)
-{
-	printf("Booted.\n\n");
+int main(){
 
-	printf("Read Val: 0x%x\n", readMem_32(0x60000000));
+	printf("Writing mem\n\n");
+	memWrite();
+	printf("Reading it\n\n");
+	memDump();
 
-	writeMem_32(0x12345678, 0x60000000);
-	printf("Wrote: 0x%x to: 0x%x\n",0x12345678,0x60000000);
-
-	printf("Read val: 0x%x\n", readMem_32(0x60000000));
-	
 	return 0;
 }
-
-static inline void writeMem_32(uint32_t data, uintptr_t mem_addr){
-
-	*(volatile uint32_t *)mem_addr = data;
-	
+void memWrite(){
+ //0x60000000 0x60080000
+	//uint32_t val = *(volatile uint32_t *)mem_addr;
+	uint8_t i = 0x01;
+	for(uint32_t begin = 0x60000000; begin < 0x60000050; begin += 0x00000001){
+		volatile uint32_t *ptr = (uint32_t *)begin;
+		*ptr = i;
+		i += 0x01;
+	}
 }
 
-static inline uint32_t readMem_32(uint32_t mem_addr){
+void memDump(){
+	for(uint32_t addresscount = 0x60000000; addresscount < 0x60000050; 
+					addresscount = addresscount + 0x00000001){
 
-	uint32_t val;
-	val = *(volatile uint32_t *)mem_addr;
-	return val;
+		volatile char *ptr = (char *)addresscount;
+		printf("%p  ",ptr);	//address
+		
+		for(char valuecounter = 0x00; valuecounter < 0x08; valuecounter += 0x01){
+			//volatile char *ptr2 = (char *)begin;
+
+			printf("%2x  ", *ptr);	
+			
+		}
+		printf("\n");
+		
+		
+	}
 }
-
