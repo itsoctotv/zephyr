@@ -37,29 +37,46 @@ int main(){
 void memWrite(){
  //0x60000000 0x60080000
 	//uint32_t val = *(volatile uint32_t *)mem_addr;
-	uint8_t i = 0x01;
-	for(uint32_t begin = 0x60000000; begin < 0x60000050; begin += 0x00000001){
+	uint8_t i = 0x00000001;
+	for(uint32_t begin = 0x60000000; begin < 0x60000500; begin += 0x00000001){
 		volatile uint32_t *ptr = (uint32_t *)begin;
 		*ptr = i;
-		i += 0x01;
+		i=i+0x00000001;
 	}
 }
 
 void memDump(){
-	for(uint32_t addresscount = 0x60000000; addresscount < 0x60000050; 
-					addresscount = addresscount + 0x00000001){
+	uint32_t addresscount = 0x60000000;
+	for(int i = 0; i < 8; i++){
+		
+		for(; addresscount < 0x60000500; addresscount += 0x00000001){
+			volatile char *ptr = (char *)addresscount;
+			printf("%02x  ", *ptr);
+
+			//add newline every 8 or 10 bytes
+
+		}
+		
+		printf("\n");
+			
+	}
+
+/*
+	for(uint32_t addresscount = 0x60000000; addresscount < 0x60000500; 
+					addresscount = addresscount + 0x00000010){
 
 		volatile char *ptr = (char *)addresscount;
 		printf("%p  ",ptr);	//address
-		
-		for(char valuecounter = 0x00; valuecounter < 0x08; valuecounter += 0x01){
+		uint32_t valuecounter = addresscount;
+		for(;valuecounter < addresscount + 0x00000000a; valuecounter += 0x01){
 			//volatile char *ptr2 = (char *)begin;
+			volatile char *ptr = (char *)valuecounter;
 
-			printf("%2x  ", *ptr);	
+				
 			
 		}
 		printf("\n");
 		
 		
-	}
+	}*/
 }
