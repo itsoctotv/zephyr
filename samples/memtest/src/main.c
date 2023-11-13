@@ -6,9 +6,12 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <zephyr/kernel.h>
 
-void memWrite();
-void memDump();
+void memWrite(uint32_t addr, char data);
+void memRead(uint32_t addr);
+
+#define LIMIT			1500
 
 /*
 
@@ -25,58 +28,56 @@ maybe:
 
 
 
+
+
+// !!! https://stackoverflow.com/questions/5610298/why-does-int-pointer-increment-by-4-rather-than-1 !!!
+
+
+
 int main(){
 
-	printf("Writing mem\n\n");
-	memWrite();
-	printf("Reading it\n\n");
-	memDump();
 
+	uint32_t addr = 0x60000000;
+	for(int i = 0; i < LIMIT; i++){
+
+		memRead(addr);
+		addr += sizeof(addr);
+		
+	}
+
+	char count = 1;
+	addr = 0x60000000;
+	printf("WRITING MEM\n");
+	k_msleep(2000);
+	for(int i = 0; i < LIMIT; i++){
+	
+		memWrite(addr, count);
+		/*if(count > 0xff){
+			count = 0;
+		}*/
+		count++;
+		addr += sizeof(addr);
+	}
+	printf("DONE\n");
+	k_msleep(2000);
+	addr = 0x60000000;
+	for(int i = 0; i < LIMIT; i++){
+
+		memRead(addr);
+		addr += sizeof(addr);
+		
+	}
+	printf("memtest complete");
 	return 0;
 }
-void memWrite(){
- //0x60000000 0x60080000
-	//uint32_t val = *(volatile uint32_t *)mem_addr;
-	uint8_t i = 0x00000001;
-	for(uint32_t begin = 0x60000000; begin < 0x60000500; begin += 0x00000001){
-		volatile uint32_t *ptr = (uint32_t *)begin;
-		*ptr = i;
-		i=i+0x00000001;
-	}
+
+void memWrite(uint32_t addr, char data){
+	volatile uint32_t *ptr = (uint32_t *)addr;
+	*ptr = data;
 }
 
-void memDump(){
-	uint32_t addresscount = 0x60000000;
-	for(int i = 0; i < 8; i++){
-		
-		for(; addresscount < 0x60000500; addresscount += 0x00000001){
-			volatile char *ptr = (char *)addresscount;
-			printf("%02x  ", *ptr);
-
-			//add newline every 8 or 10 bytes
-
-		}
-		
-		printf("\n");
-			
-	}
-
-/*
-	for(uint32_t addresscount = 0x60000000; addresscount < 0x60000500; 
-					addresscount = addresscount + 0x00000010){
-
-		volatile char *ptr = (char *)addresscount;
-		printf("%p  ",ptr);	//address
-		uint32_t valuecounter = addresscount;
-		for(;valuecounter < addresscount + 0x00000000a; valuecounter += 0x01){
-			//volatile char *ptr2 = (char *)begin;
-			volatile char *ptr = (char *)valuecounter;
-
-				
-			
-		}
-		printf("\n");
-		
-		
-	}*/
+void memRead(uint32_t addr){
+	volatile uint32_t *readaddr = (uint32_t *)addr;
+	printf("%p: %02x \n",readaddr, *readaddr);
 }
+
