@@ -11,7 +11,7 @@
 void memWrite(uint32_t addr, int32_t data);
 void memRead(uint32_t addr);
 
-#define LIMIT			4096
+#define LIMIT			1024
 #define ADDRESS			0x60000000
 /*
 
@@ -62,6 +62,7 @@ int main(){
 		addr += sizeof(uint32_t);
 		
 	}
+
 	printf("memtest complete");
 	return 0;
 }
