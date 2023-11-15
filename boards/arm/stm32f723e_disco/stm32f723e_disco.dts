@@ -61,7 +61,7 @@
 			device_type = "memory";
 			reg = <0x60000000 DT_SIZE_K(512)>;
 			zephyr,memory-region = "PSRAM";
-			zephyr,memory-attr = <( DT_MEM_ARM(ATTR_MPU_RAM) )>;
+			zephyr,memory-attr = <(DT_MEM_ARM(ATTR_MPU_RAM))>;
 	}; // psram
 
 };
