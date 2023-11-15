@@ -36,17 +36,18 @@ int main(){
 	
 */ 
 	//printf("start writing 0s\n");
-	/*for(int i = 0; i < 3000; i++){
+	for(int i = 0; i < 256; i++){
 		
-		memWrite(address, 0);
-		k_msleep(10);
+		memWrite(address, val);
+		//k_msleep(10);
 		val++;
 		address++;
-	}*/
+	}
 	printf("Done\nStart writing mem\n");
 	address = ADDRESS;
 	
-	for(int i = 0; i < 3000; i++){
+	/*
+	for(int i = 0; i < 1000; i++){
 		
 		memWrite(address, val);
 		
@@ -54,11 +55,11 @@ int main(){
 		val++;
 		address++;
 		//k_usleep(100);
-	}
+	}*/
 	printf("Done\nReading mem\n");
 	address = ADDRESS;
-	for(int i = 0; i < 3000; i++){
-
+	for(int i = 0; i < 256; i++){
+	//for(;;){
 		memRead(address);
 		address++;
 		//k_usleep(100);
